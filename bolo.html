@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Climate Change</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #000046, #1CB5E0);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      color: #FFD700;
+      font-size: 2rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      font-weight: bold;
+    }
+
+    .selectors {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    select {
+      width: 22%;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 5px;
+      color: black;
+      font-size: 1rem;
+      font-weight: bold;
+      margin-left: 3px;
+    }
+
+    .year-selector {
+      position: relative;
+      display: inline-block;
+      width: 22%;
+    }
+
+    #yearButton {
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 5px;
+      color: black;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      margin-left: 2px;
+    }
+
+    .year-dropdown {
+      display: none;
+      position: absolute;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      padding: 12px;
+      z-index: 1;
+      border-radius: 5px;
+      width: 200px;
+    }
+
+    .year-dropdown.show {
+      display: block;
+      margin-bottom: 111111px;
+    }
+
+    .year-dropdown div {
+      margin-bottom: 10px;
+    }
+
+    .year-dropdown label {
+      display: block;
+      margin-bottom: 5px;
+      color: black;
+      font-weight: bold;
+    }
+    .quiz-button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: background-color 0.3s;
+  }
+
+  .quiz-button:hover {
+    background-color: #45a049;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 10px;
+    color: #333;
+  }
+
+  .modal-content h2 {
+    color: #333;
+  }
+
+  .modal-content button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+  }
+  #scoreDisplay {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 10px;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      color: #000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    #scoreDisplay img {
+      width: 30px;
+      height: 30px;
+      margin-right: 10px;
+    }
+  .modal-content button:hover {
+    background-color: #45a049;
+  }
+
+  .modal-content label {
+    color: #333;
+    display: block;
+    margin-bottom: 10px;
+  }
+  #staticLeaderboard {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      color: #000;
+      max-width: 250px;
+    }
+
+    #staticLeaderboard h3 {
+      margin-top: 0;
+      text-align: center;
+      color: #4a4a4a;
+    }
+
+    #staticLeaderboard ul {
+      list-style-type: none;
+      padding-left: 0;
+      margin-bottom: 0;
+    }
+
+    #staticLeaderboard li {
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+    }
+  .modal-content input[type="radio"] {
+    margin-right: 10px;
+  }
+    .year-dropdown select {
+      width: 100%;
+    }
+
+    .charts-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .chart {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 10px;
+      margin-top: 20px;
+      width: 48%;
+    }
+
+    select:focus {
+      outline: none;
+      box-shadow: 0px 0px 5px 2px rgba(160, 122, 45, 0.7);
+    }
+
+    option {
+      color: black;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+    
+  <div class="container">
+
+    <div class="containeri">
+        <!-- ... (existing content) ... -->
+      </div>
+      
+      <!-- Add this new div for score display -->
+      <div id="scoreDisplay">
+        <img src="/api/placeholder/30/30" alt="Coin icon">
+        <span id="scoreValue">0</span>
+      </div>
+    <!-- Add this button just before the closing </div> of the .container -->
+<button id="quizButton" class="quiz-button">Quiz</button>
+
+<div id="quizModal" class="modal">
+  <div class="modal-content">
+    <h2>Climate Change Quiz</h2>
+    <div id="quizContent"></div>
+    <button id="submitQuiz" style="display:none;">Finish</button>
+  </div>
+</div>
+
+<div id="leaderboardModal" class="modal">
+  <div class="modal-content">
+    <h2>Leaderboard</h2>
+    <ol id="leaderboardList"></ol>
+    <button id="closeLeaderboard">Close</button>
+  </div>
+</div>
+<div class="">
+    <!-- ... (existing content) ... -->
+  </div>
+  
+  <!-- Add this new div for static leaderboard -->
+  <div id="staticLeaderboard">
+    <h3>leader board</h3>
+    <ul>
+      <li><span>leqso gremelashvili</span> <span>10 coin</span></li>
+      <li><span>gio gremelashvili</span> <span>15 coin</span></li>
+      <li><span>mariam nadiradze</span> <span>20 coin</span></li>
+    </ul>
+  </div>
+
+  <!-- Existing score display -->
+  <div id="scoreDisplay">
+    <img src="/api/placeholder/30/30" alt="Coin icon">
+    <span id="scoreValue">0</span>
+  </div>
+    <h1>Climate Change</h1>
+    <div class="selectors">
+      <select id="countrySelector">
+        <option value="">Countries</option>
+      </select>
+      <div class="year-selector">
+        <button id="yearButton">Years</button>
+        <div id="yearDropdown" class="year-dropdown">
+          <div>
+            <label for="startYearSelector">Start Year:</label>
+            <select id="startYearSelector">
+              <option value="">Choose a year</option>
+            </select>
+          </div>
+          <div>
+            <label for="endYearSelector">End Year:</label>
+            <select id="endYearSelector">
+              <option value="">Choose a year</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <select id="sectorSelector">
+        <option value="">Economic Sectors</option>
+      </select>
+      <select id="climateChangeSelector">
+        <option value="">Climate Change</option>
+      </select>
+    </div>
+    <div class="charts-container">
+      <div class="chart">
+        <canvas id="impactChart"></canvas>
+      </div>
+      <div class="chart">
+        <canvas id="contributionChart"></canvas>
+      </div>
+      <div class="chart">
+        <canvas id="disasterChart"></canvas>
+      </div>
+      <div class="chart">
+        <canvas id="casualtyChart"></canvas>
+      </div>
+    </div>
+  </div>
+  <script>
+     const quizButton = document.getElementById('quizButton');
+  const quizModal = document.getElementById('quizModal');
+  const quizContent = document.getElementById('quizContent');
+  const submitQuizButton = document.getElementById('submitQuiz');
+  const leaderboardModal = document.getElementById('leaderboardModal');
+  const leaderboardList = document.getElementById('leaderboardList');
+  const closeLeaderboardButton = document.getElementById('closeLeaderboard');
+
+  const quizQuestions = [
+    {
+      question: "What is the main greenhouse gas causing the greenhouse effect?",
+      answers: ["Carbon dioxide (CO2)", "Oxygen (O2)", "Nitrogen (N2)"],
+      correct: 0
+    },
+    {
+      question: "Which sector is responsible for the largest share of greenhouse gas emissions?",
+      answers: ["Transportation", "Agriculture", "Energy"],
+      correct: 2
+    },
+    {
+      question: "What is one of the main consequences of climate change?",
+      answers: ["Decrease in solar activity", "Sea level rise", "Slowing of Earth's rotation"],
+      correct: 1
+    },
+    {
+      question: "Which country is responsible for the largest greenhouse gas emissions?",
+      answers: ["USA", "India", "China"],
+      correct: 0
+    },
+    {
+      question: "What is a 'carbon footprint'?",
+      answers: ["The amount of carbon in the atmosphere", "The amount of greenhouse gases emitted by an individual or organization", "The process of coal mining"],
+      correct: 1
+    }
+  ];
+
+  let currentQuestionIndex = 0;
+  let score = 0;
+
+  quizButton.addEventListener('click', startQuiz);
+  submitQuizButton.addEventListener('click', submitQuiz);
+  closeLeaderboardButton.addEventListener('click', closeLeaderboard);
+
+  function startQuiz() {
+    quizModal.style.display = 'block';
+    showQuestion();
+  }
+
+  function showQuestion() {
+    if (currentQuestionIndex < quizQuestions.length) {
+      const question = quizQuestions[currentQuestionIndex];
+      let html = `<h3>${question.question}</h3>`;
+      question.answers.forEach((answer, index) => {
+        html += `<label><input type="radio" name="answer" value="${index}"> ${answer}</label><br>`;
+      });
+      quizContent.innerHTML = html;
+      submitQuizButton.style.display = 'inline-block';
+    } else {
+      showResult();
+    }
+  }
+
+  function submitQuiz() {
+    const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+    if (selectedAnswer) {
+      if (parseInt(selectedAnswer.value) === quizQuestions[currentQuestionIndex].correct) {
+        score++;
+      }
+      currentQuestionIndex++;
+      showQuestion();
+    } else {
+      alert('Please select an answer');
+    }
+  }
+
+  function showResult() {
+    quizContent.innerHTML = `<h3>You have completed the quiz!</h3><p>Your score is: ${score} / ${quizQuestions.length}</p>`;
+    submitQuizButton.style.display = 'none';
+    updateScore(score);
+    updateLeaderboard(score);
+    setTimeout(() => {
+      quizModal.style.display = 'none';
+      showLeaderboard();
+    }, 3000);
+  }
+
+  function updateLeaderboard(score) {
+    let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+    leaderboard.push(score);
+    leaderboard.sort((a, b) => b - a);
+    leaderboard = leaderboard.slice(0, 10); // Keep only top 10 scores
+    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+  }
+
+  function showLeaderboard() {
+    const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+    let html = '';
+    leaderboard.forEach((score, index) => {
+      html += `<li>Player ${index + 1}: ${score} points</li>`;
+    });
+    leaderboardList.innerHTML = html;
+    leaderboardModal.style.display = 'block';
+  }
+
+  function closeLeaderboard() {
+    leaderboardModal.style.display = 'none';
+    resetQuiz();
+  }
+
+  function resetQuiz() {
+    currentQuestionIndex = 0;
+    score = 0;
+  }
+    // Define constants and get DOM elements
+    const countries = ["USA", "China", "Japan", "Germany", "Georgia"];
+    const sectors = ["Tourism", "Agriculture", "Energy", "Healthcare", "Construction"];
+    const climateChanges = ["Temperature Rise", "Sea Level Rise", "Ice Melting", "Tropical Storms", "Heavy Rainfall", "Droughts", "Forest Fires"];
+    const disasters = ["Fires", "Floods", "Storms"];
+    const years = Array.from({length: 2050 - 1700 + 1}, (_, i) => 1700 + i);
+
+    const countrySelector = document.getElementById('countrySelector');
+    const sectorSelector = document.getElementById('sectorSelector');
+    const climateChangeSelector = document.getElementById('climateChangeSelector');
+    const yearButton = document.getElementById('yearButton');
+    const yearDropdown = document.getElementById('yearDropdown');
+    const startYearSelector = document.getElementById('startYearSelector');
+    const endYearSelector = document.getElementById('endYearSelector');
+    const ctx = document.getElementById('impactChart').getContext('2d');
+    const ctxContribution = document.getElementById('contributionChart').getContext('2d');
+    const ctxDisaster = document.getElementById('disasterChart').getContext('2d');
+    const ctxCasualty = document.getElementById('casualtyChart').getContext('2d');
+    let chart, contributionChart, disasterChart, casualtyChart;
+
+    // Populate selectors
+    function populateSelector(selector, options) {
+        options.forEach(option => {
+            const element = document.createElement('option');
+            element.value = option;
+            element.textContent = option;
+            selector.appendChild(element);
+        });
+    }
+
+    populateSelector(countrySelector, countries);
+    populateSelector(sectorSelector, sectors);
+    populateSelector(climateChangeSelector, climateChanges);
+
+    // Year button functionality
+    yearButton.addEventListener('click', function(event) {
+      event.stopPropagation();
+      yearDropdown.classList.toggle('show');
+    });
+   window.addEventListener('click', function(event) {
+      if (!yearDropdown.contains(event.target) && !yearButton.contains(event.target)) {
+        yearDropdown.classList.remove('show');
+      }
+    });
+  
+    // Populate year selectors
+    years.forEach(year => {
+      const startOption = document.createElement('option');
+      startOption.value = year;
+      startOption.textContent = year;
+      startYearSelector.appendChild(startOption);
+
+      const endOption = document.createElement('option');
+      endOption.value = year;
+      endOption.textContent = year;
+      endYearSelector.appendChild(endOption);
+    });
+
+    // Generate data for impact chart
+    function generateData(startYear, endYear, climateChange) {
+        return years
+            .filter(year => year >= startYear && year <= endYear)
+            .map(year => ({
+                year: year,
+                impact: climateChange === "Heavy Rainfall" ? 
+                    Math.floor(Math.random() * 100) : // millimeters for rainfall
+                    Math.floor(Math.random() * 5) - 2 // degrees for other cases
+            }));
+    }
+
+    // Generate data for contribution chart
+    function generateContributionData(climateChange) {
+        let factors;
+        switch(climateChange) {
+            case "Temperature Rise":
+                factors = ["Greenhouse Gas Emissions", "Deforestation", "Urban Heat Island Effect", "Ocean Temperature Rise", "Solar Activity Change"];
+                break;
+            case "Sea Level Rise":
+                factors = ["Ice Melting", "Ocean Thermal Expansion", "Glacier Melting", "Groundwater Extraction", "Ocean Current Changes"];
+                break;
+            default:
+                factors = ["Factor 1", "Factor 2", "Factor 3", "Factor 4", "Factor 5"];
+        }
+        
+        return factors.map(factor => ({
+            factor: factor,
+            contribution: Math.floor(Math.random() * 40) + 10
+        }));
+    }
+
+    // Generate data for disaster chart
+    function generateDisasterData(startYear, endYear) {
+        return years
+            .filter(year => year >= startYear && year <= endYear)
+            .map(year => ({
+                year: year,
+                fires: Math.floor(Math.random() * 100),
+                floods: Math.floor(Math.random() * 100),
+                storms: Math.floor(Math.random() * 100)
+            }));
+    }
+
+    // Generate data for casualty chart
+    function generateCasualtyData(startYear, endYear) {
+        return years
+            .filter(year => year >= startYear && year <= endYear)
+            .map(year => ({
+                year: year,
+                casualties: Math.floor(Math.random() * 1000)
+            }));
+    }
+
+    // Update all charts
+    function updateCharts() {
+        const country = countrySelector.value;
+        const sector = sectorSelector.value;
+        const climateChange = climateChangeSelector.value;
+        const startYear = parseInt(startYearSelector.value);
+        const endYear = parseInt(endYearSelector.value);
+
+        if (country && sector && climateChange && !isNaN(startYear) && !isNaN(endYear) && startYear <= endYear) {
+            const data = generateData(startYear, endYear, climateChange);
+            const contributionData = generateContributionData(climateChange);
+            const disasterData = generateDisasterData(startYear, endYear);
+            const casualtyData = generateCasualtyData(startYear, endYear);
+
+            const yAxisTitle = climateChange === "Heavy Rainfall" ? "Millimeters" : "Degrees Celsius";
+
+            if (chart) {
+                chart.data.labels = data.map(d => d.year);
+                chart.data.datasets[0].data = data.map(d => d.impact);
+                chart.options.plugins.title.text = `Climate Change: ${climateChange}`;
+                chart.options.scales.y.title.text = yAxisTitle;
+                chart.update();
+            } else {
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.map(d => d.year),
+                        datasets: [{
+                            label: `${climateChange}`,
+                            data: data.map(d => d.impact),
+                            borderColor: 'gold',
+                            backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: `Climate Change: ${climateChange}`,
+                                color: 'white',
+                                font: {
+                                    size: 16,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: yAxisTitle,
+                                    color: 'white',
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                                ticks: {
+                                    color: 'white'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Years',
+                                    color: 'white',
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                                ticks: {
+                                    color: 'white'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            if (contributionChart) {
+                contributionChart.data.labels = contributionData.map(d => d.factor);
+                contributionChart.data.datasets[0].data = contributionData.map(d => d.contribution);
+                contributionChart.update();
+            } else {
+                contributionChart = new Chart(ctxContribution, {
+                    type: 'bar',
+                    data: {
+                        labels: contributionData.map(d => d.factor),
+                        datasets: [{
+                            label: `Factors Contributing to ${climateChange}`,
+                            data: contributionData.map(d => d.contribution),
+                            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: 'white',
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Percentage',
+                                    color: 'white',
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                                ticks: {
+                                    color: 'white'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Contributing Factors',
+                                    color: 'white',
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                                ticks: {
+                                    color: 'white'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            if (disasterChart) {
+                disasterChart.data.labels = disasterData.map(d => d.year);
+                disasterChart.data.datasets[0].data = disasterData.map(d => d.fires);
+                disasterChart.data.datasets[1].data = disasterData.map(d => d.floods);
+                disasterChart.data.datasets[2].data = disasterData.map(d => d.storms);
+                disasterChart.update();
+            } else {
+                disasterChart = new Chart(ctxDisaster, {
+                    type: 'bar',
+                    data: {
+                        labels: disasterData.map(d => d.year),
+                        datasets: [
+                            {
+                                label: 'Fires',
+                                data: disasterData.map(d => d.fires),
+                                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Floods',
+                                data: disasterData.map(d => d.floods),
+                                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Storms',
+                                data: disasterData.map(d => d.storms),
+                                backgroundColor: 'rgba(255, 206, 86, 0.5)',
+                                borderColor: 'rgba(255, 206, 86, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: 'white',
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Disasters Caused by Climate Change',
+                                color: 'white',
+                                font: {
+                                    size: 16,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Incidents',
+                                    color: 'white',
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                                ticks: {
+                                    color: 'white'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Years',
+                                    color: 'white',
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                                ticks: {
+                                    color: 'white'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            if (casualtyChart) {
+                casualtyChart.data.labels = casualtyData.map(d => d.year);
+                casualtyChart.data.datasets[0].data = casualtyData.map(d => d.casualties);
+                casualtyChart.update();
+            } else {
+                casualtyChart = new Chart(ctxCasualty, {
+                    type: 'line',
+                    data: {
+                        labels: casualtyData.map(d => d.year),
+                        datasets: [{
+                            label: 'Casualties',
+                            data: casualtyData.map(d => d.casualties),
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderWidth: 2,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: 'white',
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Casualties Caused by Climate Change',
+                                color: 'white',
+                                font: {
+                                    size: 16,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Casualties',
+                                    color: 'white',
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                                ticks: {
+                                    color: 'white'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Years',
+                                    color: 'white',
+                                    font: {
+                                        weight: 'bold'
+                                    }
+                                },
+                                ticks: {
+                                    color: 'white'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    countrySelector.addEventListener('change', updateCharts);
+    sectorSelector.addEventListener('change', updateCharts);
+    climateChangeSelector.addEventListener('change', updateCharts);
+    startYearSelector.addEventListener('change', updateCharts);
+    endYearSelector.addEventListener('change', updateCharts);
+
+    function updateScore(newScore) {
+      const scoreValue = document.getElementById('scoreValue');
+      scoreValue.textContent = newScore;
+    }
+
+    function showResult() {
+      quizContent.innerHTML = `<h3>You have completed the quiz!</h3><p>Your score is: ${score} / ${quizQuestions.length}</p>`;
+      submitQuizButton.style.display = 'none';
+      updateScore(score);
+      updateLeaderboard(score);
+      setTimeout(() => {
+        quizModal.style.display = 'none';
+        showLeaderboard();
+      }, 3000);
+    }
+
+  </script>
+</body>
